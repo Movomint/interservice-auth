@@ -1,55 +1,63 @@
-import jwt
 import time
 import uuid
-from typing import Any, Dict
+from typing import Any, Dict, Mapping
+
+import jwt
 from jwt import InvalidTokenError
 
 ALGORITHM = "RS256"
+_OPTIONS = {"require": ["exp", "iat", "nbf", "iss", "aud", "jti"]}
+
 
 def create_service_token(
+    *,
     issuer: str,
     audience: str,
-    private_key,
+    private_key: str | bytes,
     kid: str,
     lifetime_seconds: int = 30,
+    not_before_skew: int = 5,
     extra_claims: Dict[str, Any] | None = None,
 ) -> str:
+    """Mint a short-lived JWT signed with the service’s private RSA key."""
     now = int(time.time())
-    payload = {
+    payload: Dict[str, Any] = {
         "iss": issuer,
-        "sub": issuer,
+        "sub": issuer,  
         "aud": audience,
         "iat": now,
+        "nbf": now - not_before_skew,
         "exp": now + lifetime_seconds,
         "jti": str(uuid.uuid4()),
+        **(extra_claims or {}),
     }
-    if extra_claims:
-        payload.update(extra_claims)
-
     headers = {"kid": kid}
-    token = jwt.encode(payload, private_key, algorithm=ALGORITHM, headers=headers)
-    return token
+    return jwt.encode(payload, private_key, algorithm=ALGORITHM, headers=headers)
+
 
 def verify_token(
+    *,
     token: str,
     expected_audience: str,
-    public_keys_map: Dict[str, Any],
+    public_keys_map: Mapping[str, str | bytes],
     issuer_whitelist: set[str] | None = None,
+    leeway: int = 30,
 ) -> Dict[str, Any]:
+    """Validate a JWT using the matching public key from `public_keys_map`."""
     unverified_header = jwt.get_unverified_header(token)
     kid = unverified_header.get("kid")
     if not kid or kid not in public_keys_map:
-        raise InvalidTokenError("Unknown kid")
+        raise InvalidTokenError("Unknown or missing kid")
 
-    key = public_keys_map[kid]
     payload = jwt.decode(
         token,
-        key=key,
+        key=public_keys_map[kid],
         algorithms=[ALGORITHM],
         audience=expected_audience,
-        options={"require": ["exp", "iat", "iss", "aud", "jti"]},
+        options=_OPTIONS,
+        leeway=leeway,
     )
     if issuer_whitelist and payload.get("iss") not in issuer_whitelist:
         raise InvalidTokenError("Unexpected issuer")
-    return payload
 
+    return payload
