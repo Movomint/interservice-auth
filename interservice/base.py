@@ -13,12 +13,23 @@ def register_service(name: Services):
     return deco
 
 class BaseHTTPService:
-    def __init__(self, service: Services):
-        self.name = service.value  
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # Auto-register subclasses that declare a SERVICE attribute
+        service_name = getattr(cls, "SERVICE", None)
+        if service_name is not None:
+            _SERVICE_CLASS_REGISTRY[service_name] = cls
+
+    def __init__(self, service: Services | None = None):
+        # If a subclass has SERVICE set, prefer that; otherwise require explicit service
+        service = service or getattr(self, "SERVICE", None)
+        if service is None:
+            raise ValueError("SERVICE must be provided on the subclass or passed to __init__")
+        self.name = service.value
         self.base_url = get_service_url(service)
         self.timeout = 30
 
-    async def api_call(
+    async def _call_(
         self,
         method: str,
         path: str,
@@ -49,4 +60,14 @@ class BaseHTTPService:
             )
        
         return resp.json()
+
+
+def get_service_client(name: Services) -> BaseHTTPService:
+    """Return a client instance for the given service name.
+
+    Requires the corresponding client class to be registered, either via
+    the SERVICE class attribute or the register_service decorator.
+    """
+    cls = _SERVICE_CLASS_REGISTRY[name]
+    return cls(name)
 
