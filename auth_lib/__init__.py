@@ -1,10 +1,10 @@
-from .tokens import create_service_token, verify_token
-from .middleware import require_internal_auth
-from .helpers import auth_header as build_auth_header
+from .auth import verify_internal_token
+from .base import register_service, BaseHTTPService
+from .config import Services
 
 __all__ = [
-    "create_service_token",
-    "verify_token",
-    "require_internal_auth",
-    "build_auth_header",
+    "verify_internal_token",
+    "register_service",
+    "BaseHTTPService",
+    "Services",
 ]
