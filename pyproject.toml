@@ -3,19 +3,22 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "auth-lib"               
+name = "interservice"
 version = "0.1.0"
 description = "Lightweight JWT-based service-to-service auth for Movomint backends"
 requires-python = ">=3.10"
 readme = "README.md"
 dependencies = [
-  "PyJWT>=2.8.0",
   "httpx>=0.27.0",
-  "fastapi>=0.111.0"
+  "fastapi>=0.111.0",
+  "PyJWT>=2.6.0",
 ]
 
 [project.optional-dependencies]
-tests = ["pytest", "pytest-asyncio"]
+tests = [
+  "pytest>=7.0.0",
+  "pytest-asyncio>=0.20.0",
+]
 
 [tool.setuptools]
-packages = ["auth_lib"]          
+packages = ["interservice"]
