@@ -34,7 +34,7 @@ async def test_api_call_success(monkeypatch):
     import httpx
 
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout: FakeClient())
-    data = await service.api_call("get", "/health")
+    data = await service._call_("get", "/health")
     assert data == {"ok": True}
 
 
@@ -59,7 +59,7 @@ async def test_api_call_connect_error(monkeypatch):
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout: FakeClient())
 
     with pytest.raises(HTTPException) as exc:
-        await service.api_call("get", "/health")
+        await service._call_("get", "/health")
     assert exc.value.status_code == 503
     assert "unreachable" in exc.value.detail
 
@@ -85,7 +85,7 @@ async def test_api_call_http_error(monkeypatch):
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout: FakeClient())
 
     with pytest.raises(HTTPException) as exc:
-        await service.api_call("get", "/health")
+        await service._call_("get", "/health")
     assert exc.value.status_code == 502
     assert "HTTP error" in exc.value.detail
 
@@ -119,7 +119,7 @@ async def test_api_call_non_200_with_json_detail(monkeypatch):
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout: FakeClient())
 
     with pytest.raises(HTTPException) as exc:
-        await service.api_call("get", "/missing")
+        await service._call_("get", "/missing")
     assert exc.value.status_code == 404
     assert exc.value.detail == "not found"
 
@@ -153,7 +153,7 @@ async def test_api_call_non_200_with_invalid_json(monkeypatch):
     monkeypatch.setattr(httpx, "AsyncClient", lambda timeout: FakeClient())
 
     with pytest.raises(HTTPException) as exc:
-        await service.api_call("get", "/error")
+        await service._call_("get", "/error")
     assert exc.value.status_code == 500
     assert exc.value.detail == "oops"
 

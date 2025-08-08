@@ -6,12 +6,6 @@ from typing import Any
 
 _SERVICE_CLASS_REGISTRY: dict[Services, type["BaseHTTPService"]] = {}
 
-def register_service(name: Services):
-    def deco(cls):
-        _SERVICE_CLASS_REGISTRY[name] = cls
-        return cls
-    return deco
-
 class BaseHTTPService:
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

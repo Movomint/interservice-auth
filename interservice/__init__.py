@@ -1,10 +1,9 @@
 from .auth import verify_internal_token
-from .base import register_service, BaseHTTPService, get_service_client
+from .base import BaseHTTPService, get_service_client
 from .config import Services
 
 __all__ = [
     "verify_internal_token",
-    "register_service",
     "BaseHTTPService",
     "get_service_client",
     "Services",
