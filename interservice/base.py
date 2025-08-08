@@ -1,4 +1,5 @@
 import httpx
+import json as jsonlib
 from .config import Services, get_service_url
 from fastapi import HTTPException
 from typing import Any
@@ -38,7 +39,7 @@ class BaseHTTPService:
             try:
                 error = resp.json()
                 detail = error["detail"] if isinstance(error, dict) and "detail" in error else error
-            except (ValueError, json.JSONDecodeError):
+            except (ValueError, jsonlib.JSONDecodeError):
                 # Handle cases where response is not valid JSON
                 detail = resp.text if resp.text else f"{self.name} service returned status {resp.status_code}"
             
