@@ -28,7 +28,7 @@ async def test_api_call_success(monkeypatch):
         async def __aexit__(self, exc_type, exc, tb):
             return False
 
-        async def request(self, method, url, params=None, json=None):
+        async def request(self, method, url, params=None, json=None, headers=None, **kwargs):
             return FakeResponse()
 
     import httpx
@@ -49,7 +49,7 @@ async def test_api_call_connect_error(monkeypatch):
         async def __aexit__(self, exc_type, exc, tb):
             return False
 
-        async def request(self, method, url, params=None, json=None):
+        async def request(self, method, url, params=None, json=None, headers=None, **kwargs):
             import httpx
 
             raise httpx.ConnectError("boom")
@@ -75,7 +75,7 @@ async def test_api_call_http_error(monkeypatch):
         async def __aexit__(self, exc_type, exc, tb):
             return False
 
-        async def request(self, method, url, params=None, json=None):
+        async def request(self, method, url, params=None, json=None, headers=None, **kwargs):
             import httpx
 
             raise httpx.HTTPError("boom")
@@ -111,7 +111,7 @@ async def test_api_call_non_200_with_json_detail(monkeypatch):
         async def __aexit__(self, exc_type, exc, tb):
             return False
 
-        async def request(self, method, url, params=None, json=None):
+        async def request(self, method, url, params=None, json=None, headers=None, **kwargs):
             return FakeResponse()
 
     import httpx
@@ -145,7 +145,7 @@ async def test_api_call_non_200_with_invalid_json(monkeypatch):
         async def __aexit__(self, exc_type, exc, tb):
             return False
 
-        async def request(self, method, url, params=None, json=None):
+        async def request(self, method, url, params=None, json=None, headers=None, **kwargs):
             return FakeResponse()
 
     import httpx

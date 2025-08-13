@@ -1,6 +1,6 @@
 import os, time, argparse, jwt
 
-os.environ["INTERNAL_AUTH_SECRET"] = ""
+os.environ["INTERNAL_AUTH_SECRET"] = "your_secret_value"
 
 def make_token(secret: str) -> str:
     now = int(time.time())
