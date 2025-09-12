@@ -1,6 +1,8 @@
 import httpx
 import json as jsonlib
 import os
+import time
+import jwt
 from .config import Services, get_service_url
 from fastapi import HTTPException
 from typing import Any
@@ -21,8 +23,19 @@ class BaseHTTPService:
         self.name = service.value
         self.base_url = get_service_url(service)
         self.timeout = 30
-        secret = os.environ.get("INTERNAL_AUTH_SECRET")
-        self._default_headers: dict[str, str] = {"X-Internal-Auth": secret} if secret else {}
+        self.secret = os.environ.get("INTERNAL_AUTH_SECRET")
+        if not self.secret:
+            raise ValueError("INTERNAL_AUTH_SECRET environment variable is required")
+
+    def _generate_service_token(self) -> str:
+        """Generate a JWT token for service-to-service authentication"""
+        now = int(time.time())
+        payload = {
+            "sub": self.name,  # service identifier
+            "iat": now,
+            "exp": now + 300  # 5 minute expiry
+        }
+        return jwt.encode(payload, self.secret, algorithm="HS256")
 
     async def _call_(
         self,
@@ -35,7 +48,9 @@ class BaseHTTPService:
     ) -> Any:
         url = self.base_url + "/" + path.lstrip("/")
 
-        req_headers = dict(self._default_headers)
+        token = self._generate_service_token()
+        
+        req_headers = {"Authorization": f"Bearer {token}"}
         if headers:
             req_headers.update(headers)
 
