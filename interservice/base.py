@@ -64,7 +64,7 @@ class BaseHTTPService:
         except httpx.HTTPError:
             raise HTTPException(status_code=502, detail=f"{self.name} HTTP error")
 
-        if resp.status_code != 200:
+        if 200 <= resp.status_code < 300:
             try:
                 error = resp.json()
                 detail = error["detail"] if isinstance(error, dict) and "detail" in error else error
