@@ -1,5 +1,6 @@
 [project]
 name = "interservice"
+version = "0.1.0"
 requires-python = ">=3.9"
 dependencies = ["httpx", "fastapi", "PyJWT"]
 description = "Lightweight JWT-based service-to-service auth for Movomint backends"
