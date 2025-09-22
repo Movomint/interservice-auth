@@ -28,13 +28,8 @@ class BaseHTTPService:
             raise ValueError("INTERNAL_AUTH_SECRET environment variable is required")
 
     def _generate_service_token(self) -> str:
-        """Generate a JWT token for service-to-service authentication"""
         now = int(time.time())
-        payload = {
-            "sub": self.name,  # service identifier
-            "iat": now,
-            "exp": now + 300  # 5 minute expiry
-        }
+        payload = {"sub": self.name, "iat": now, "exp": now + 300}
         return jwt.encode(payload, self.secret, algorithm="HS256")
 
     async def _call_(
@@ -49,7 +44,6 @@ class BaseHTTPService:
         url = self.base_url + "/" + path.lstrip("/")
 
         token = self._generate_service_token()
-        
         req_headers = {"Authorization": f"Bearer {token}"}
         if headers:
             req_headers.update(headers)
@@ -64,15 +58,24 @@ class BaseHTTPService:
         except httpx.HTTPError:
             raise HTTPException(status_code=502, detail=f"{self.name} HTTP error")
 
-        if 200 <= resp.status_code < 300:
+        if resp.status_code in (200, 201, 202, 204):
+            if resp.status_code == 204 or not resp.content:
+                return {}
             try:
-                error = resp.json()
-                detail = error["detail"] if isinstance(error, dict) and "detail" in error else error
+                return resp.json()
             except (ValueError, jsonlib.JSONDecodeError):
-                detail = resp.text if resp.text else f"{self.name} service returned status {resp.status_code}"
-            raise HTTPException(status_code=resp.status_code, detail=detail)
+                text = resp.text or ""
+                try:
+                    return jsonlib.loads(text) if text else {}
+                except (ValueError, jsonlib.JSONDecodeError):
+                    return {"raw": text, "status_code": resp.status_code}
 
-        return resp.json()
+        try:
+            error = resp.json()
+            detail = error["detail"] if isinstance(error, dict) and "detail" in error else error
+        except (ValueError, jsonlib.JSONDecodeError):
+            detail = resp.text if resp.text else f"{self.name} service returned status {resp.status_code}"
+        raise HTTPException(status_code=resp.status_code, detail=detail)
 
 
 def get_service_client(name: Services) -> BaseHTTPService:
