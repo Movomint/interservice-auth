@@ -1,8 +1,11 @@
 import os
 import jwt
 from fastapi import Header, HTTPException, status
+from dotenv import load_dotenv, find_dotenv
 
-SECRET = os.environ["INTERNAL_AUTH_SECRET"]
+load_dotenv(find_dotenv())
+
+SECRET = os.getenv("INTERNAL_AUTH_SECRET")
 
 def verify_internal_token(
     authorization: str = Header(..., description="Bearer token")
