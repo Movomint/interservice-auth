@@ -1,10 +1,10 @@
 import os
 from enum import Enum
 
-CORE_API_BASE_URL = os.environ.get('CORE_API_BASE_URL', 'http://localhost:8000')
-DATABASE_API_BASE_URL = os.environ.get('DATABASE_API_BASE_URL', 'http://localhost:8001')
-EXTRACTION_AGENT_BASE_URL = os.environ.get('EXTRACTION_AGENT_BASE_URL', 'http://localhost:8002')
-MOVOTIME_BASE_URL = os.environ.get('MOVOTIME_BASE_URL', 'http://localhost:8003')
+CORE_API_BASE_URL = os.environ.get('CORE_API_BASE_URL', 'http://core-api:8000')
+DATABASE_API_BASE_URL = os.environ.get('DATABASE_API_BASE_URL', 'http://database-api:8001')
+EXTRACTION_AGENT_BASE_URL = os.environ.get('EXTRACTION_AGENT_BASE_URL', 'http://extraction-agent:8002')
+MOVOTIME_BASE_URL = os.environ.get('MOVOTIME_BASE_URL', 'http://movotime:8003')
 GATEWAY_BASE_URL = os.environ.get('GATEWAY_BASE_URL', 'https://gateway.movomint.com')
 LOAD_PLAN_PRO_BASE_URL = os.environ.get('LOAD_PLAN_PRO_BASE_URL', '')
 
