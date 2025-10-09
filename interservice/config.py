@@ -6,6 +6,7 @@ DATABASE_API_BASE_URL = os.environ.get('DATABASE_API_BASE_URL', 'http://database
 EXTRACTION_AGENT_BASE_URL = os.environ.get('EXTRACTION_AGENT_BASE_URL', 'http://extraction-agent:8002')
 MOVOTIME_BASE_URL = os.environ.get('MOVOTIME_BASE_URL', 'http://movotime:8003')
 GATEWAY_BASE_URL = os.environ.get('GATEWAY_BASE_URL', 'https://gateway.movomint.com')
+INTERNAL_API_BASE_URL = os.environ.get('INTERNAL_API_BASE_URL', 'http://internal-api:8005')
 LOAD_PLAN_PRO_BASE_URL = os.environ.get('LOAD_PLAN_PRO_BASE_URL', '')
 
 class Services(str, Enum):
@@ -15,7 +16,7 @@ class Services(str, Enum):
     MOVOTIME = 'movotime'
     GATEWAY = 'gateway-service'
     LOAD_PLAN_PRO = 'load-plan-pro'
-
+    INTERNAL_API = 'internal-api'
 
 SERVICE_REGISTRY: dict[Services, str] = {
     Services.CORE_API: CORE_API_BASE_URL,
@@ -23,7 +24,8 @@ SERVICE_REGISTRY: dict[Services, str] = {
     Services.EXTRACTION_AGENT: EXTRACTION_AGENT_BASE_URL,
     Services.MOVOTIME:  MOVOTIME_BASE_URL,
     Services.GATEWAY: GATEWAY_BASE_URL,
-    Services.LOAD_PLAN_PRO: LOAD_PLAN_PRO_BASE_URL
+    Services.LOAD_PLAN_PRO: LOAD_PLAN_PRO_BASE_URL,
+    Services.INTERNAL_API: INTERNAL_API_BASE_URL
 }
 
 
