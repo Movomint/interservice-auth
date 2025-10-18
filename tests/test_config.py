@@ -5,9 +5,8 @@ from interservice.config import (
 
 
 def test_services_enum_values() -> None:
-    assert Services.EXTRACTION_AGENT.value == "extraction-agent"
+    assert Services.ORDER_ENTRY.value == "order-entry"
     assert Services.DATABASE.value == "database"
-    assert Services.LOAD_PLAN_PRO.value == "load-plan-pro"
 
 
 def test_default_registry_uses_env_defaults() -> None:
@@ -17,16 +16,14 @@ def test_default_registry_uses_env_defaults() -> None:
 
 
 def test_get_service_url_reads_overrides_from_env(monkeypatch) -> None:
-    monkeypatch.setenv("EXTRACTION_AGENT_BASE_URL", "http://override:9001")
+    monkeypatch.setenv("ORDER_ENTRY_BASE_URL", "http://override:9001")
     monkeypatch.setenv("DATABASE_API_BASE_URL", "http://override:9002")
-    monkeypatch.setenv("LOAD_PLAN_PRO_BASE_URL", "http://override:9003")
 
     import importlib
     import interservice.config as cfg
     importlib.reload(cfg)
 
-    assert cfg.get_service_url(cfg.Services.EXTRACTION_AGENT) == "http://override:9001"
+    assert cfg.get_service_url(cfg.Services.ORDER_ENTRY) == "http://override:9001"
     assert cfg.get_service_url(cfg.Services.DATABASE) == "http://override:9002"
-    assert cfg.get_service_url(cfg.Services.LOAD_PLAN_PRO) == "http://override:9003"
 
 
