@@ -8,18 +8,29 @@ from interservice.config import Services
 
 class DummyService(BaseHTTPService):
     def __init__(self):
-        super().__init__(Services.EXTRACTION_AGENT)
+        super().__init__(Services.ORDER_ENTRY)
 
 
 @pytest.mark.asyncio
 async def test_api_call_success(monkeypatch):
     service = DummyService()
 
+    
     class FakeResponse:
         status_code = 200
 
         def json(self):
             return {"ok": True}
+
+        @property
+        def content(self):
+            # mimic httpx.Response.content
+            return b'{"ok": true}'
+
+        @property
+        def text(self):
+            # mimic httpx.Response.text
+            return '{"ok": true}'
 
     class FakeClient:
         async def __aenter__(self):
