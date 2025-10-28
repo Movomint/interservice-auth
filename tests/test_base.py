@@ -8,7 +8,7 @@ from interservice.config import Services
 
 class DummyService(BaseHTTPService):
     def __init__(self):
-        super().__init__(Services.ORDER_ENTRY)
+        super().__init__(Services.AGENT_PLATFORM)
 
 
 @pytest.mark.asyncio
